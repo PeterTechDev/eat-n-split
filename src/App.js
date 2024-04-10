@@ -48,6 +48,7 @@ export default function App() {
     setSelectedFriend((selectedFriend) =>
       selectedFriend?.id === friend.id ? null : friend
     );
+    setShowAddFriendForm(false); // Close the form after selecting a friend
   }
 
   return (
