@@ -30,17 +30,23 @@ function Button({ children, onClick }) {
 }
 
 export default function App() {
+  const [friends, setFriends] = useState(initialFriends);
   const [showAddFriendForm, setShowAddFriendForm] = useState(false);
 
   function handleShowAddFriend() {
     setShowAddFriendForm((show) => !show);
   }
 
+  function handleAddFriend(newFriend) {
+    setFriends((friends) => [...friends, newFriend]);
+    setShowAddFriendForm(false); // Close the form after adding a friend
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendList />
-        {showAddFriendForm && <FormAddFriend />}
+        <FriendList friends={friends} />
+        {showAddFriendForm && <FormAddFriend onAddFriend={handleAddFriend} />}
         <Button onClick={handleShowAddFriend}>
           {" "}
           {showAddFriendForm ? "Close" : "Add Friend"}
@@ -52,9 +58,8 @@ export default function App() {
   );
 }
 
-function FriendList() {
+function FriendList({ friends }) {
   // const [friends, setFriends] = useState(initialFriends);
-  const friends = initialFriends;
 
   return (
     <ul>
@@ -87,21 +92,29 @@ function Friend({ friend }) {
   );
 }
 
-function FormAddFriend() {
+function FormAddFriend({ onAddFriend }) {
   const [name, setName] = useState("");
   const [image, setImage] = useState("https://i.pravatar.cc/48");
 
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (!name || !image) {
+      return;
+    }
+
+    const id = crypto.randomUUID();
     const newFriend = {
+      id,
       name,
-      image,
+      image: `${image}?u=${id} `, // Add a unique query parameter
       balance: 0,
-      id: crypto.randomUUID,
     };
 
-    console.log(newFriend);
+    onAddFriend(newFriend); // Call the onAddFriend prop
+
+    setName("");
+    setImage("https://i.pravatar.cc/48");
   }
 
   return (
